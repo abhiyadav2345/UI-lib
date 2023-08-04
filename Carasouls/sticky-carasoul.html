@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Multi-Slide Image Slider</title>
+  <style>
+    /* Slider container */
+    .slider-container {
+      position: relative;
+      width: 100%;
+      overflow: hidden;
+      position: fixed;
+      top: 0;
+      z-index: 9999;  
+      margin-top: 60px;
+      background-color: white;
+      border: 1px solid;
+   }
+
+    /* Slides container */
+    .slides-container {
+      display: flex;
+      transition: transform 0.3s ease-in-out;
+      cursor: grab; /* Add grab cursor for dragging */
+    }
+
+    /* Individual slide */
+    .slide {
+      /* Adjust the number to change the number of visible slides */
+      /* In this example, 3 slides are visible at a time */
+      flex: 0 0 calc(100% / 3);
+      max-width: calc(100% / 3);
+      margin: 0 5px;
+      border: 2px solid red;
+    }
+
+    /* Navigation buttons */
+    .slider-nav {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      display: none;
+    }
+
+    .slider-container:hover .slider-nav {
+      display: flex;
+    }
+
+    .slider-nav button {
+     
+     
+      border: none;
+      padding: 8px 12px;
+      cursor: pointer;
+    }
+
+    /* Positioning the previous and next buttons */
+    .slider-nav .prev {
+      left: 10px;
+    }
+
+    .slider-nav .next {
+      right: 10px;
+    }
+
+    /* Styling the previous and next buttons */
+    .slider-nav .prev::after {
+
+      margin-left: 5px;
+    }
+
+    .slider-nav .next::after {
+     
+      margin-right: 5px;
+    }
+    .prev-div{
+      left: 0;
+      z-index: 99999;
+    }
+    .next-div{
+      right: 0;
+      z-index: 99999;
+
+    }
+  .close-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+     font-size: 2rem;
+      border: none;
+      cursor: pointer;
+      z-index: 999999;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      /* For screen size up to 768px (e.g., tablets) */
+      .slide {
+        flex: 0 0 calc(100% / 2);
+        max-width: calc(100% / 2);
+      }
+    }
+
+    @media (max-width: 576px) {
+      /* For screen size up to 576px (e.g., mobile devices) */
+      .slide {
+        flex: 0 0 100%;
+        max-width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="slider-container">
+   <button class="close-btn" onclick="closeSlider()">&times;</button>
+
+      <div class="slider-nav prev-div">
+      <button class="prev" onclick="prevSlide()"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-left" viewBox="0 0 16 16">
+  <path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/>
+</svg>
+         </button>
+    </div>
+    <div class="slides-container" onmousedown="startDrag(event)" ontouchstart="startDrag(event)">
+      <!-- Replace these image URLs with your actual images -->
+      <div class="slide"><img src="https://res.cloudinary.com/dx8gt3nnu/image/upload/q_auto,f_auto/dryp-shoe-pictures/dunk-low-'panda'-dd1391100/display_picture.png" alt="Image 1"></div>
+      <div class="slide"><img src="https://res.cloudinary.com/dx8gt3nnu/image/upload/q_auto,f_auto/dryp-shoe-pictures/dunk-low-'panda'-dd1391100/display_picture.png" alt="Image 1"></div>
+      <div class="slide"><img src="https://res.cloudinary.com/dx8gt3nnu/image/upload/q_auto,f_auto/dryp-shoe-pictures/dunk-low-'panda'-dd1391100/display_picture.png" alt="Image 1"></div>
+      <div class="slide"><img src="https://res.cloudinary.com/dx8gt3nnu/image/upload/q_auto,f_auto/dryp-shoe-pictures/dunk-low-'panda'-dd1391100/display_picture.png" alt="Image 1"></div>
+      <div class="slide"><img src="https://res.cloudinary.com/dx8gt3nnu/image/upload/q_auto,f_auto/dryp-shoe-pictures/dunk-low-'panda'-dd1391100/display_picture.png" alt="Image 1"></div>
+      <div class="slide"><img src="https://res.cloudinary.com/dx8gt3nnu/image/upload/q_auto,f_auto/dryp-shoe-pictures/dunk-low-'panda'-dd1391100/display_picture.png" alt="Image 1"></div>
+      <div class="slide"><img src="https://res.cloudinary.com/dx8gt3nnu/image/upload/q_auto,f_auto/dryp-shoe-pictures/dunk-low-'panda'-dd1391100/display_picture.png" alt="Image 1"></div>
+
+      <!-- Add more slides as needed -->
+    </div>
+
+    <!-- Navigation buttons -->
+    <div class="slider-nav next-div">
+      <button class="next" onclick="nextSlide()">
+         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-right" viewBox="0 0 16 16">
+  <path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/>
+</svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- JavaScript for slider functionality -->
+  <script>
+    const slidesContainer = document.querySelector('.slides-container');
+    const slides = document.querySelectorAll('.slide');
+    const slideWidth = slides[0].clientWidth + 10; // Adjust the margin value (5px on both sides)
+    const sliderContainer = document.querySelector('.slider-container');
+
+    let currentIndex = 0;
+    let initialX = null;
+    let isDragging = false;
+
+    function showSlide(index) {
+      slidesContainer.style.transform = `translateX(-${index * slideWidth}px)`;
+    }
+
+    function nextSlide() {
+      currentIndex = Math.min(currentIndex + 1, slides.length - 3);
+      showSlide(currentIndex);
+    }
+ function closeSlider() {
+      sliderContainer.style.display = 'none';
+    }
+    function prevSlide() {
+      currentIndex = Math.max(currentIndex - 1, 0);
+      showSlide(currentIndex);
+    }
+
+    function startDrag(event) {
+      event.preventDefault();
+      isDragging = true;
+      initialX = event.touches ? event.touches[0].clientX : event.clientX;
+    }
+
+    function endDrag(event) {
+      if (!isDragging) return;
+      isDragging = false;
+      const finalX = event.changedTouches ? event.changedTouches[0].clientX : event.clientX;
+      const diffX = initialX - finalX;
+
+      if (diffX > 50) {
+        nextSlide();
+      } else if (diffX < -50) {
+        prevSlide();
+      }
+    }
+
+    function moveDrag(event) {
+      if (!isDragging) return;
+      const currentX = event.touches ? event.touches[0].clientX : event.clientX;
+      const diffX = initialX - currentX;
+      slidesContainer.style.transform = `translateX(-${currentIndex * slideWidth + diffX}px)`;
+    }
+
+    slidesContainer.addEventListener('mousemove', moveDrag);
+    slidesContainer.addEventListener('touchmove', moveDrag, { passive: true });
+    slidesContainer.addEventListener('mouseup', endDrag);
+    slidesContainer.addEventListener('touchend', endDrag, { passive: true });
+    sliderContainer.addEventListener('mouseleave', endDrag);
+  </script>
+
+</body>
+</html>
